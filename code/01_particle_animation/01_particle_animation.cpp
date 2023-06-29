@@ -206,6 +206,8 @@ int main(int argc, const char** argv)
 	particle.Translate(glm::vec3(0.0f, 5.0f, 0.0f)); // move up a bit
 	//particle.Scale(glm::vec3(.1f, .1f, .1f)); // shrink it to 10% of original
 	//particle.Rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f)); // rotate by 90 degrees around X axis
+	glm::vec3 particleSpeed = glm::vec3(0, 0, 0);
+	int particleOscillation = 0;
 
 	/*
 	CREATE THE PARTICLE(S) YOU NEED TO COMPLETE THE TASKS HERE
@@ -249,12 +251,17 @@ int main(int argc, const char** argv)
 
 		// 1 - make particle fall with accelerating speed using the .Translate method
 
+		//particleSpeed += glm::vec3(0.0f, -0.01f, 0.0f);
+		//particle.Translate(particleSpeed);
 
 		// 2 - same as above using the .SetPosition method
 
+		//particleSpeed += glm::vec3(0.0f, -0.01f, 0.0f);
+		//particle.SetPosition(particle.Position() + particleSpeed);
 
 		// 3 - make particle oscillate above the ground plane
 
+		//particle.SetPosition(glm::vec3(particle.Position().x, sin(timeSinceStart)*5, particle.Position().z));
 
 		// 4 - particle animation from initial velocity and acceleration
 
