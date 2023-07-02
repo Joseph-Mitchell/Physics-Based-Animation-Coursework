@@ -180,42 +180,66 @@ int initRender() {
 	return 1;
 }
 
+struct Particle
+{
+	Mesh mesh;
+	Object object;
+	glm::vec3 speed;
+
+	Particle(const Shader* shader, glm::vec3 speed)
+	{
+		mesh.Init(TetrahedronMeshData());
+
+		object.SetMesh(&mesh);
+		object.SetShader(shader);
+		object.SetColor(glm::vec4(1, 0, 0, 1));
+		object.Translate(glm::vec3(0.0f, 5.0f, 0.0f));
+
+		this->speed = speed;
+	}
+};
+
 // main function
 int main(int argc, const char** argv)
 {
+
+#define TASK 6
+
 	// init renderer
 	initRender();
 
 	// Shader initialisation uses OpenGL, so needs to happen AFTER initRender
 	auto defaultShader = CreateDefaultShader();
 
-	// Mesh initialisation uses OpenGL, so needs to happen AFTER initRender
-	Mesh particleMesh, groundMesh;
-
+#if TASK!=6
+	Mesh particleMesh;
 	particleMesh.Init(TetrahedronMeshData());
-	groundMesh.Init(PlaneMeshData(glm::vec2(10.0f, 10.0f)));
 
-	Object particle, ground;
+	Object particle;
 	particle.SetMesh(&particleMesh);
 	particle.SetShader(&defaultShader);
 
+	particle.SetColor(glm::vec4(1, 0, 0, 1));
+	particle.Translate(glm::vec3(0.0f, 5.0f, 0.0f));
+
+	glm::vec3 particleSpeed = glm::vec3(0.1f, 0, 0);
+	int particleOscillation = 0;
+#else
+	Particle particles[5] = { Particle(&defaultShader, glm::vec3(0, 0, -0.5f)), Particle(&defaultShader, glm::vec3(-0.5f, 0, -0.5f)), Particle(&defaultShader, glm::vec3(-0.5f, 0, 0)), Particle(&defaultShader, glm::vec3(-0.25f, 0, -0.5f)), Particle(&defaultShader, glm::vec3(0, 0, -0.25f)) };
+#endif
+
+	// Mesh initialisation uses OpenGL, so needs to happen AFTER initRender
+	Mesh groundMesh;
+	groundMesh.Init(PlaneMeshData(glm::vec2(10.0f, 10.0f)));
+
+	Object ground;
 	ground.SetMesh(&groundMesh);
 	ground.SetShader(&defaultShader);
-
-	particle.SetColor(glm::vec4(1, 0, 0, 1)); // set red color
-	particle.Translate(glm::vec3(0.0f, 5.0f, 0.0f)); // move up a bit
-	//particle.Scale(glm::vec3(.1f, .1f, .1f)); // shrink it to 10% of original
-	//particle.Rotate((GLfloat) M_PI_2, glm::vec3(1.0f, 0.0f, 0.0f)); // rotate by 90 degrees around X axis
-	glm::vec3 particleSpeed = glm::vec3(0, 0, 0);
-	int particleOscillation = 0;
-
-	/*
-	CREATE THE PARTICLE(S) YOU NEED TO COMPLETE THE TASKS HERE
-	*/
 
 	GLfloat timeStart = (GLfloat)glfwGetTime();
 	GLfloat lastFrameTimeSinceStart = timeStart;
 	const float ANIMATION_SPEED = 11.0f; // increase this if you want time to move faster
+
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -251,26 +275,55 @@ int main(int argc, const char** argv)
 
 		// 1 - make particle fall with accelerating speed using the .Translate method
 
-		//particleSpeed += glm::vec3(0.0f, -0.01f, 0.0f);
-		//particle.Translate(particleSpeed);
+#if TASK==1
+		particleSpeed += glm::vec3(0.0f, -0.01f, 0.0f);
+		particle.Translate(particleSpeed);
+#endif
 
 		// 2 - same as above using the .SetPosition method
 
-		//particleSpeed += glm::vec3(0.0f, -0.01f, 0.0f);
-		//particle.SetPosition(particle.Position() + particleSpeed);
+#if TASK==2
+		particleSpeed += glm::vec3(0.0f, -0.01f, 0.0f);
+		particle.SetPosition(particle.Position() + particleSpeed);
+#endif
 
 		// 3 - make particle oscillate above the ground plane
 
-		//particle.SetPosition(glm::vec3(particle.Position().x, sin(timeSinceStart)*5, particle.Position().z));
+#if TASK==3
+		particle.SetPosition(glm::vec3(particle.Position().x, sin(timeSinceStart)*5, particle.Position().z));
+#endif
 
 		// 4 - particle animation from initial velocity and acceleration
 
+#if TASK==4
+		particleSpeed += glm::vec3(0.0f, -0.00981f, 0.0f);
+		particle.SetPosition(particle.Position() + particleSpeed);
+#endif
 
 		// 5 - add collision with plane
 
+#if TASK==5
+		particleSpeed += glm::vec3(0.0f, -0.00981f, 0.0f);
+		particle.SetPosition(particle.Position() + particleSpeed);
+
+		if (particle.Position().y <= 0)
+		{
+			particleSpeed *= glm::vec3(1, -1, 1);
+		}
+#endif
 
 		// 6 - Same as above but for a collection of particles
 
+#if TASK==6
+		for (int i = 0; i < 5; i++)
+		{
+			particles[i].speed += glm::vec3(0.0f, -0.00981f, 0.0f);
+			particles[i].object.Translate(particles[i].speed);
+
+			if (particles[i].object.Position().y <= 0)
+				particles[i].speed *= glm::vec3(1, -1, 1);
+		}
+#endif
 
 		/*
 		**	RENDER
@@ -284,7 +337,14 @@ int main(int argc, const char** argv)
 		ground.Draw(view, projection);
 
 		// draw particle
+#if TASK != 6
 		particle.Draw(view, projection);
+#else
+		for (Particle p : particles)
+		{
+			p.object.Draw(view, projection);
+		}
+#endif
 
 		// Swap the buffers
 		glfwSwapBuffers(window);
