@@ -21,7 +21,7 @@ public:
 
 private:
 
-	PhysicsBody ground;
+	PhysicsBody ground, boundingBox;
 	Particle particle;
 
 };

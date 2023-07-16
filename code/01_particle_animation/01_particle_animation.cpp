@@ -340,7 +340,7 @@ int main(int argc, const char** argv)
 #if TASK != 6
 		particle.Draw(view, projection);
 #else
-		for (Particle p : particles)
+		for (const Particle p : particles)
 		{
 			p.object.Draw(view, projection);
 		}
